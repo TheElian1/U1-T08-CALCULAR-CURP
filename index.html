@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculador de CURP</title>
+  <style>
+    body {
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      background: #c3c2c2;
+      color: #000000;
+      padding: 5px;
+    }
+    h1 {
+      text-align: center;
+    }
+    form, #resultado {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+    input, select, button {
+      width: fit-content;
+      padding: 7px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      
+    }
+    button {
+      background: #2fb000;
+      color: rgb(0, 0, 0);
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+    }
+    button:hover {
+      background: #20810a;
+      transition: 1s;
+    }
+    #resultado {
+      display: none;
+      text-align: left;
+    }
+    #curpFinal {
+      font-size: 22px;
+      font-weight: bold;
+      color: #b91c1c;
+      text-align: center;
+      margin: 15px 0;
+    }
+    .dato {
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Calculador de CURP</h1>
+  <form id="formCURP">
+    <label>Nombre(s):</label>
+    <input type="text" id="nombre" placeholder="Ej. Leonel">
+
+    <label>Apellido Paterno:</label>
+    <input type="text" id="apellidoPaterno" placeholder="Ej. Haro">
+
+    <label>Apellido Materno:</label>
+    <input type="text" id="apellidoMaterno" placeholder="Ej. López">
+
+    <label>Fecha de Nacimiento:</label>
+    <select id="dia">
+      <option value="">Día</option>
+      <script>
+        for (let i=1; i<=31; i++) {
+          document.write(`<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`);
+        }
+      </script>
+    </select>
+    <select id="mes">
+      <option value="">Mes</option>
+      <script>
+        for (let i=1; i<=12; i++) {
+          document.write(`<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`);
+        }
+      </script>
+    </select>
+    <select id="anio">
+      <option value="">Año</option>
+      <script>
+        for (let i=2025; i>=1940; i--) {
+          document.write(`<option value="${i}">${i}</option>`);
+        }
+      </script>
+    </select>
+
+    <label>Sexo:</label>
+    <select id="sexo">
+      <option value="">Seleccione</option>
+      <option value="H">Hombre</option>
+      <option value="M">Mujer</option>
+    </select>
+
+    <label>Estado de Nacimiento:</label>
+    <select id="estado">
+      <option value="">Seleccione</option>
+      <option value="AS">Aguascalientes</option>
+      <option value="BC">Baja California</option>
+      <option value="BS">Baja California Sur</option>
+      <option value="CC">Campeche</option>
+      <option value="CL">Coahuila</option>
+      <option value="CM">Colima</option>
+      <option value="CS">Chiapas</option>
+      <option value="CH">Chihuahua</option>
+      <option value="DF">Ciudad de México</option>
+      <option value="DG">Durango</option>
+      <option value="GT">Guanajuato</option>
+      <option value="GR">Guerrero</option>
+      <option value="HG">Hidalgo</option>
+      <option value="JC">Jalisco</option>
+      <option value="MC">México</option>
+      <option value="MN">Michoacán</option>
+      <option value="MS">Morelos</option>
+      <option value="NT">Nayarit</option>
+      <option value="NL">Nuevo León</option>
+      <option value="OC">Oaxaca</option>
+      <option value="PL">Puebla</option>
+      <option value="QT">Querétaro</option>
+      <option value="QR">Quintana Roo</option>
+      <option value="SP">San Luis Potosí</option>
+      <option value="SL">Sinaloa</option>
+      <option value="SR">Sonora</option>
+      <option value="TC">Tabasco</option>
+      <option value="TS">Tamaulipas</option>
+      <option value="TL">Tlaxcala</option>
+      <option value="VZ">Veracruz</option>
+      <option value="YN">Yucatán</option>
+      <option value="ZS">Zacatecas</option>
+      <option value="NE">Nacido en el Extranjero</option>
+    </select>
+   <br>
+   <br>
+    <button type="button" onclick="generarCURP()">Generar CURP</button>
+  </form>
+
+  <div id="resultado">
+    <p id="curpFinal"></p>
+    <div class="dato"><strong>Nombre completo:</strong> <span id="datoNombre"></span></div>
+    <div class="dato"><strong>Fecha de nacimiento:</strong> <span id="datoFecha"></span></div>
+    <div class="dato"><strong>Sexo:</strong> <span id="datoSexo"></span></div>
+    <div class="dato"><strong>Estado de nacimiento:</strong> <span id="datoEstado"></span></div>
+    <button onclick="Regresar()">Regresar</button>
+  </div>
+
+  <script>
+    function limpiarTexto(txt) {
+      return txt.trim().toUpperCase();
+    }
+
+    function primeraVocalInterna(palabra) {
+      const match = palabra.slice(1).match(/[AEIOU]/);
+      return match ? match[0] : "X";
+    }
+
+    function primeraConsonanteInterna(palabra) {
+      const match = palabra.slice(1).match(/[BCDFGHJKLMNÑPQRSTVWXYZ]/);
+      return match ? match[0] : "X";
+    }
+
+    function generarCURP() {
+      let nombre = limpiarTexto(document.getElementById("nombre").value);
+      let apPat = limpiarTexto(document.getElementById("apellidoPaterno").value);
+      let apMat = limpiarTexto(document.getElementById("apellidoMaterno").value);
+      let dia = document.getElementById("dia").value;
+      let mes = document.getElementById("mes").value;
+      let anio = document.getElementById("anio").value;
+      let sexo = document.getElementById("sexo").value;
+      let estado = document.getElementById("estado");
+      let estadoVal = estado.value;
+      let estadoTxt = estado.options[estado.selectedIndex].text;
+
+      if (!nombre || !apPat || !apMat || !dia || !mes || !anio || !sexo || !estadoVal) {
+        alert("Por favor complete todos los campos.");
+        return;
+      }
+
+      // Manejo de nombres comunes (José, María)
+      let nombresArr = nombre.split(" ");
+      let primerNombre = nombresArr[0];
+      if (["JOSE", "JOSÉ", "MARIA", "MARÍA"].includes(primerNombre) && nombresArr.length > 1) {
+        primerNombre = nombresArr[1];
+      }
+
+      let curp = "";
+      curp += apPat[0];
+      curp += primeraVocalInterna(apPat);
+      curp += apMat[0] || "X";
+      curp += primerNombre[0];
+
+      curp += anio.slice(-2) + mes + dia;
+
+      curp += sexo + estadoVal;
+
+      curp += primeraConsonanteInterna(apPat);
+      curp += primeraConsonanteInterna(apMat);
+      curp += primeraConsonanteInterna(primerNombre);
+
+      curp += "";
+
+      document.getElementById("formCURP").style.display = "none";
+      document.getElementById("resultado").style.display = "block";
+      document.getElementById("curpFinal").innerText = "CURP Generada: " + curp;
+      document.getElementById("datoNombre").innerText = nombre + " " + apPat + " " + apMat;
+      document.getElementById("datoFecha").innerText = `${dia}/${mes}/${anio}`;
+      document.getElementById("datoSexo").innerText = (sexo === "H") ? "Hombre" : "Mujer";
+      document.getElementById("datoEstado").innerText = estadoTxt;
+    }
+
+    function Regresar() {
+      document.getElementById("resultado").style.display = "none";
+      document.getElementById("formCURP").style.display = "block";
+    }
+  </script>
+</body>
+</html>
